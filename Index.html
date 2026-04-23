@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Brawl Lunch wheel</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            max-width: 480px; 
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
+        header {
+            width: 100%;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            background-color: #1a1a1a;
+            border-bottom: 1px solid #333;
+        }
+        .logo-placeholder {
+            height: 30px;
+            width: 30px;
+            border-radius: 50%;
+            margin-right: 15px;
+            background-color: #333; /* Fallback color if image is missing */
+            object-fit: cover;
+        }
+        header h1 {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+            color: #eaeaea;
+        }
+        
+        #wheel-wrapper {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 50px auto 40px auto;
+        }
+        #wheelCanvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #222;
+            transform: rotate(0deg); 
+            border: 4px solid #2a2a2a;
+        }
+        
+        /* Center dot of the wheel */
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 45px;
+            height: 45px;
+            background-color: #1a1a1a;
+            border-radius: 50%;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .wheel-center-inner {
+            width: 10px;
+            height: 10px;
+            background-color: #333;
+            border-radius: 50%;
+        }
+
+        /* Pointer at the TOP */
+        .pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #2a2c33;
+            z-index: 10;
+        }
+
+        #spinBtn {
+            background-color: #222;
+            color: white;
+            border: none;
+            padding: 20px 0;
+            width: 85%;
+            font-size: 18px;
+            font-weight: 800;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #spinBtn:active {
+            background-color: #111;
+        }
+
+        #resetBtn {
+            background-color: transparent;
+            color: #888;
+            border: none;
+            padding: 10px 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-top: 25px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            width: 100%;
+            text-align: left;
+            border-top: 1px solid #333;
+        }
+        #termsBtn {
+            color: #888;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Winner Modal - Matched to Dark Theme Screenshot */
+        #winnerModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(18, 18, 18, 0.95);
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #1a1a1a;
+            width: 90%;
+            max-width: 350px;
+            border-radius: 20px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .modal-content h3 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 900;
+            color: #d4d4d4;
+            letter-spacing: 1px;
+        }
+
+        #winnerText {
+            font-size: 40px;
+            font-weight: 900;
+            color: #3b82f6; /* Default Blue, overridden by JS to match slice */
+            margin: 5px 0 20px 0;
+            text-transform: uppercase;
+        }
+
+        /* Image Box Container */
+        .img-container {
+            width: 100%;
+            height: 250px;
+            background-color: #222;
+            border-radius: 12px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .img-fallback-text {
+            color: #888;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .img-fallback-subtext {
+            color: #666;
+            font-size: 11px;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        #winnerImg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none; /* Hidden until loaded successfully */
+        }
+
+        #continueBtn {
+            background-color: #2548b5;
+            color: white;
+            border: none;
+            padding: 16px 0;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 800;
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        #continueBtn:active {
+            background-color: #1d3a94;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="Resources/logo.png" alt="" class="logo-placeholder" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='">
+        <h1>Brawl Lunch wheel</h1>
+    </header>
+
+    <div id="wheel-wrapper">
+        <canvas id="wheelCanvas" width="600" height="600"></canvas>
+        <div class="wheel-center">
+            <div class="wheel-center-inner"></div>
+        </div>
+        <div class="pointer"></div>
+    </div>
+
+    <button id="spinBtn">Spin</button>
+    <button id="resetBtn">Reset Wheel</button>
+
+    <footer>
+        <span id="termsBtn">Terms</span>
+    </footer>
+
+    <div id="winnerModal">
+        <div class="modal-content">
+            <h3>WINNER:</h3>
+            <div id="winnerText"></div>
+            
+            <div class="img-container">
+                <div class="img-fallback-text">Winner's Picture</div>
+                <div class="img-fallback-subtext" id="fallbackSubtext"></div>
+                <img id="winnerImg" src="" alt="">
+            </div>
+
+            <button id="continueBtn">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Original names mapped to their specific colors from the screenshot
+        const originalData = [
+            { name: "Adam", color: "#6c3b88" },
+            { name: "Ryuji", color: "#3c8134" },
+            { name: "Anjani", color: "#8c6b29" },
+            { name: "Krish", color: "#a62828" },
+            { name: "Kriss", color: "#2742a2" },
+            { name: "Noah", color: "#a86128" }
+        ];
+        
+        let wheelData = [...originalData];
+
+        // Rigged State Logic
+        let isRigged = false;
+        const riggedOrder = ["Noah", "Anjani", "Adam"];
+        let riggedIndex = 0;
+        
+        let currentRotation = 0;
+        let isSpinning = false;
+
+        function drawWheel() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if(wheelData.length === 0) return;
+            
+            const arc = (2 * Math.PI) / wheelData.length;
+            const center = canvas.width / 2;
+            const radius = center;
+
+            for (let i = 0; i < wheelData.length; i++) {
+                ctx.beginPath();
+                ctx.fillStyle = wheelData[i].color;
+                
+                ctx.moveTo(center, center);
+                ctx.arc(center, center, radius, i * arc, (i + 1) * arc);
+                ctx.fill();
+                
+                // Draw text
+                ctx.save();
+                ctx.translate(center, center);
+                // Rotate to center of the slice
+                ctx.rotate(i * arc + arc / 2);
+                ctx.textAlign = "right";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 32px Arial"; // Scaled up for higher res canvas
+                // Position text near the edge, reading inwards
+                ctx.fillText(wheelData[i].name, radius - 40, 0);
+                ctx.restore();
+            }
+        }
+
+        drawWheel();
+
+        document.getElementById('spinBtn').addEventListener('click', () => {
+            if(isSpinning || wheelData.length === 0) return;
+            isSpinning = true;
+
+            let winningName;
+
+            if (isRigged && riggedIndex < riggedOrder.length && wheelData.some(d => d.name === riggedOrder[riggedIndex])) {
+                winningName = riggedOrder[riggedIndex];
+                riggedIndex++;
+            } else {
+                winningName = wheelData[Math.floor(Math.random() * wheelData.length)].name;
+            }
+
+            const winIndex = wheelData.findIndex(d => d.name === winningName);
+            const winColor = wheelData[winIndex].color;
+            const arcDeg = 360 / wheelData.length;
+            
+            // Pointer is at the TOP (270 degrees in canvas math)
+            // We calculate how much to rotate so the center of the winning slice lands at 270 deg.
+            const sliceCenterAngle = winIndex * arcDeg + (arcDeg / 2);
+            const targetAngleToLandOnTop = 270 - sliceCenterAngle;
+            
+            const currentMod = currentRotation % 360;
+            
+            // Spin 6 full times + difference to land exactly on target
+            let spinAmount = (360 * 6) + (targetAngleToLandOnTop - currentMod);
+            
+            if(spinAmount < (360 * 5)) {
+                spinAmount += 360;
+            }
+
+            currentRotation += spinAmount;
+
+            canvas.style.transition = 'transform 4s cubic-bezier(0.15, 0.85, 0.25, 1)';
+            canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                isSpinning = false;
+                showWinner(winningName, winColor);
+            }, 4100);
+        });
+
+        function showWinner(name, color) {
+            const winnerTextEl = document.getElementById('winnerText');
+            const winnerImgEl = document.getElementById('winnerImg');
+            const fallbackSubtextEl = document.getElementById('fallbackSubtext');
+            
+            winnerTextEl.innerText = name;
+            winnerTextEl.style.color = color; // Match text to slice color
+            
+            // Set image path to Resources folder
+            const imagePath = `Resources/${name}.png`;
+            winnerImgEl.src = imagePath;
+            fallbackSubtextEl.innerText = `(Image missing: add ${name}.png to Resources folder)`;
+            
+            // Only show image if it loads successfully
+            winnerImgEl.onload = () => { winnerImgEl.style.display = 'block'; };
+            winnerImgEl.onerror = () => { winnerImgEl.style.display = 'none'; };
+
+            document.getElementById('winnerModal').style.display = 'flex';
+        }
+
+        document.getElementById('continueBtn').addEventListener('click', () => {
+            document.getElementById('winnerModal').style.display = 'none';
+            
+            const winnerName = document.getElementById('winnerText').innerText;
+            wheelData = wheelData.filter(d => d.name !== winnerName);
+            
+            // Reset image display for next spin
+            document.getElementById('winnerImg').style.display = 'none';
+            document.getElementById('winnerImg').src = "";
+            
+            currentRotation = 0;
+            canvas.style.transition = 'none';
+            canvas.style.transform = `rotate(0deg)`;
+            drawWheel();
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            if(isSpinning) return;
+            wheelData = [...originalData];
+            
+            if(isRigged) {
+                riggedIndex = 0;
+            }
+
+            currentRotation = 0;
+            canvas.style.transition = 'none';
+            canvas.style.transform = `rotate(0deg)`;
+            drawWheel();
+        });
+
+        // The Hidden Rigged Toggle
+        const termsBtn = document.getElementById('termsBtn');
+        termsBtn.addEventListener('click', () => {
+            isRigged = !isRigged;
+            if(isRigged) {
+                termsBtn.innerText = "Terms.";
+                riggedIndex = 0;
+            } else {
+                termsBtn.innerText = "Terms";
+            }
+        });
+
+    </script>
+</body>
+</html>
