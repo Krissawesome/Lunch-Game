@@ -36,7 +36,7 @@
             width: 30px;
             border-radius: 50%;
             margin-right: 15px;
-            background-color: #333; /* Fallback color if image is missing */
+            background-color: #333; 
             object-fit: cover;
         }
         header h1 {
@@ -46,6 +46,7 @@
             color: #eaeaea;
         }
         
+        /* Wheel UI */
         #wheel-wrapper {
             position: relative;
             width: 320px;
@@ -60,8 +61,6 @@
             transform: rotate(0deg); 
             border: 4px solid #2a2a2a;
         }
-        
-        /* Center dot of the wheel */
         .wheel-center {
             position: absolute;
             top: 50%;
@@ -82,8 +81,6 @@
             background-color: #333;
             border-radius: 50%;
         }
-
-        /* Pointer at the TOP */
         .pointer {
             position: absolute;
             top: -15px;
@@ -142,7 +139,7 @@
             user-select: none;
         }
 
-        /* Winner Modal - Matched to Dark Theme Screenshot */
+        /* Winner Modal */
         #winnerModal {
             display: none;
             position: fixed;
@@ -156,7 +153,6 @@
             justify-content: center;
             align-items: center;
         }
-        
         .modal-content {
             background-color: #1a1a1a;
             width: 90%;
@@ -168,7 +164,6 @@
             align-items: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-
         .modal-content h3 {
             margin: 0;
             font-size: 24px;
@@ -176,16 +171,13 @@
             color: #d4d4d4;
             letter-spacing: 1px;
         }
-
         #winnerText {
             font-size: 40px;
             font-weight: 900;
-            color: #3b82f6; /* Default Blue, overridden by JS to match slice */
+            color: #3b82f6; 
             margin: 5px 0 20px 0;
             text-transform: uppercase;
         }
-
-        /* Image Box Container */
         .img-container {
             width: 100%;
             height: 250px;
@@ -200,7 +192,6 @@
             overflow: hidden;
             position: relative;
         }
-
         .img-fallback-text {
             color: #888;
             font-size: 14px;
@@ -208,14 +199,12 @@
             text-align: center;
             padding: 0 20px;
         }
-
         .img-fallback-subtext {
             color: #666;
             font-size: 11px;
             margin-top: 8px;
             text-align: center;
         }
-
         #winnerImg {
             width: 100%;
             height: 100%;
@@ -223,9 +212,8 @@
             position: absolute;
             top: 0;
             left: 0;
-            display: none; /* Hidden until loaded successfully */
+            display: none; 
         }
-
         #continueBtn {
             background-color: #2548b5;
             color: white;
@@ -240,6 +228,104 @@
         }
         #continueBtn:active {
             background-color: #1d3a94;
+        }
+
+        /* --- SCREENS & ANIMATIONS --- */
+        #calculatingScreen {
+            display: none;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        #calculatingScreen h2 {
+            font-size: 28px;
+            color: #d4d4d4;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        #teamsScreen {
+            display: none;
+            flex: 1;
+            width: 100%;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .team-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        .team-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #888;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Player Animation States */
+        .player {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            opacity: 0; /* Hidden initially */
+            transform: translateY(-20px);
+            transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .player.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .player img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #444;
+            margin-bottom: 8px;
+            background-color: #222;
+        }
+        .player span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #eaeaea;
+        }
+
+        /* VS Divider (Clickable Reset) */
+        #vsDivider {
+            font-size: 45px;
+            margin: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0; /* Hidden initially */
+            transform: scale(0.8);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            cursor: pointer; /* Shows it's clickable */
+            user-select: none;
+        }
+        #vsDivider.show {
+            opacity: 1;
+            transform: scale(1);
+            animation: pulse 2s infinite 0.5s; /* Starts pulsing after appearing */
+        }
+        #vsDivider:active {
+            transform: scale(0.9);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
         }
 
     </style>
@@ -262,9 +348,27 @@
     <button id="spinBtn">Spin</button>
     <button id="resetBtn">Reset Wheel</button>
 
-    <footer>
+    <footer id="footer">
         <span id="termsBtn">Terms</span>
     </footer>
+
+    <div id="calculatingScreen">
+        <h2>Calculating<span id="dots"></span></h2>
+    </div>
+
+    <div id="teamsScreen">
+        <div class="team-col" id="team1Col">
+            <div class="team-title">Team 1</div>
+            <div id="team1Players"></div>
+        </div>
+        
+        <div id="vsDivider" title="Click to Reset!">⚔️</div>
+        
+        <div class="team-col" id="team2Col">
+            <div class="team-title">Team 2</div>
+            <div id="team2Players"></div>
+        </div>
+    </div>
 
     <div id="winnerModal">
         <div class="modal-content">
@@ -285,7 +389,6 @@
         const canvas = document.getElementById('wheelCanvas');
         const ctx = canvas.getContext('2d');
         
-        // Original names mapped to their specific colors from the screenshot
         const originalData = [
             { name: "Adam", color: "#6c3b88" },
             { name: "Ryuji", color: "#3c8134" },
@@ -296,8 +399,8 @@
         ];
         
         let wheelData = [...originalData];
+        let selectedPlayers = []; 
 
-        // Rigged State Logic
         let isRigged = false;
         const riggedOrder = ["Noah", "Anjani", "Adam"];
         let riggedIndex = 0;
@@ -321,16 +424,13 @@
                 ctx.arc(center, center, radius, i * arc, (i + 1) * arc);
                 ctx.fill();
                 
-                // Draw text
                 ctx.save();
                 ctx.translate(center, center);
-                // Rotate to center of the slice
                 ctx.rotate(i * arc + arc / 2);
                 ctx.textAlign = "right";
                 ctx.textBaseline = "middle";
                 ctx.fillStyle = "#fff";
-                ctx.font = "bold 32px Arial"; // Scaled up for higher res canvas
-                // Position text near the edge, reading inwards
+                ctx.font = "bold 32px Arial"; 
                 ctx.fillText(wheelData[i].name, radius - 40, 0);
                 ctx.restore();
             }
@@ -355,14 +455,10 @@
             const winColor = wheelData[winIndex].color;
             const arcDeg = 360 / wheelData.length;
             
-            // Pointer is at the TOP (270 degrees in canvas math)
-            // We calculate how much to rotate so the center of the winning slice lands at 270 deg.
             const sliceCenterAngle = winIndex * arcDeg + (arcDeg / 2);
             const targetAngleToLandOnTop = 270 - sliceCenterAngle;
             
             const currentMod = currentRotation % 360;
-            
-            // Spin 6 full times + difference to land exactly on target
             let spinAmount = (360 * 6) + (targetAngleToLandOnTop - currentMod);
             
             if(spinAmount < (360 * 5)) {
@@ -386,14 +482,12 @@
             const fallbackSubtextEl = document.getElementById('fallbackSubtext');
             
             winnerTextEl.innerText = name;
-            winnerTextEl.style.color = color; // Match text to slice color
+            winnerTextEl.style.color = color; 
             
-            // Set image path to Resources folder
             const imagePath = `Resources/${name}.png`;
             winnerImgEl.src = imagePath;
             fallbackSubtextEl.innerText = `(Image missing: add ${name}.png to Resources folder)`;
             
-            // Only show image if it loads successfully
             winnerImgEl.onload = () => { winnerImgEl.style.display = 'block'; };
             winnerImgEl.onerror = () => { winnerImgEl.style.display = 'none'; };
 
@@ -404,21 +498,113 @@
             document.getElementById('winnerModal').style.display = 'none';
             
             const winnerName = document.getElementById('winnerText').innerText;
+            selectedPlayers.push(winnerName);
             wheelData = wheelData.filter(d => d.name !== winnerName);
             
-            // Reset image display for next spin
             document.getElementById('winnerImg').style.display = 'none';
             document.getElementById('winnerImg').src = "";
             
+            if (selectedPlayers.length === 3) {
+                triggerTeamCalculation();
+            } else {
+                currentRotation = 0;
+                canvas.style.transition = 'none';
+                canvas.style.transform = `rotate(0deg)`;
+                drawWheel();
+            }
+        });
+
+        function triggerTeamCalculation() {
+            document.getElementById('wheel-wrapper').style.display = 'none';
+            document.getElementById('spinBtn').style.display = 'none';
+            document.getElementById('resetBtn').style.display = 'none';
+            document.getElementById('footer').style.display = 'none';
+
+            const calcScreen = document.getElementById('calculatingScreen');
+            calcScreen.style.display = 'flex';
+
+            let dotCount = 0;
+            const dotsEl = document.getElementById('dots');
+            const dotInterval = setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                dotsEl.innerText = '.'.repeat(dotCount);
+            }, 400);
+
+            // 2 seconds for calculating
+            setTimeout(() => {
+                clearInterval(dotInterval);
+                calcScreen.style.display = 'none';
+                showTeams();
+            }, 2000);
+        }
+
+        function generatePlayerHTML(name) {
+            return `
+                <div class="player">
+                    <img src="Resources/${name}.png" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='">
+                    <span>${name}</span>
+                </div>
+            `;
+        }
+
+        function showTeams() {
+            document.getElementById('teamsScreen').style.display = 'flex';
+
+            const team1HTML = selectedPlayers.map(name => generatePlayerHTML(name)).join('');
+            document.getElementById('team1Players').innerHTML = team1HTML;
+
+            const remainingPlayers = wheelData.map(d => d.name);
+            const team2HTML = remainingPlayers.map(name => generatePlayerHTML(name)).join('');
+            document.getElementById('team2Players').innerHTML = team2HTML;
+
+            const team1Nodes = document.querySelectorAll('#team1Players .player');
+            const team2Nodes = document.querySelectorAll('#team2Players .player');
+            const vsDivider = document.getElementById('vsDivider');
+
+            // Staggered animation: Rows drop in 1 second apart (0s, 1s, 2s)
+            for(let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    if(team1Nodes[i]) team1Nodes[i].classList.add('show');
+                    if(team2Nodes[i]) team2Nodes[i].classList.add('show');
+                }, i * 1000); 
+            }
+
+            // VS Emoji reveals 1 second after the final row (3s total animation + 2s calculation = 5 seconds)
+            setTimeout(() => {
+                vsDivider.classList.add('show');
+            }, 3000);
+        }
+
+        // The ⚔️ Emoji Click to Reset
+        document.getElementById('vsDivider').addEventListener('click', () => {
+            document.getElementById('teamsScreen').style.display = 'none';
+            document.getElementById('vsDivider').classList.remove('show');
+            
+            // Bring UI back
+            document.getElementById('wheel-wrapper').style.display = 'block';
+            document.getElementById('spinBtn').style.display = 'block';
+            document.getElementById('resetBtn').style.display = 'block';
+            document.getElementById('footer').style.display = 'block';
+
+            // Reset Logic
+            wheelData = [...originalData];
+            selectedPlayers = [];
+            
+            if(isRigged) {
+                riggedIndex = 0;
+            }
+
             currentRotation = 0;
             canvas.style.transition = 'none';
             canvas.style.transform = `rotate(0deg)`;
             drawWheel();
         });
 
+        // The Manual Reset Button
         document.getElementById('resetBtn').addEventListener('click', () => {
             if(isSpinning) return;
             wheelData = [...originalData];
+            selectedPlayers = [];
             
             if(isRigged) {
                 riggedIndex = 0;
