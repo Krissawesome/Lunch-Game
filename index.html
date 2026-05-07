@@ -31,7 +31,7 @@
             align-items: center;
             background-color: #1a1a1a;
             border-bottom: 1px solid #333;
-            justify-content: space-between; /* Spaced out for History button */
+            justify-content: space-between;
         }
         .header-left {
             display: flex;
@@ -72,7 +72,7 @@
             position: relative;
             width: 320px;
             height: 320px;
-            margin: 50px auto 40px auto;
+            margin: 50px auto 30px auto;
         }
         #wheelCanvas {
             width: 100%;
@@ -81,6 +81,7 @@
             background-color: #222;
             transform: rotate(0deg); 
             border: 4px solid #2a2a2a;
+            cursor: pointer; /* To indicate it's clickable during replace mode */
         }
         .wheel-center {
             position: absolute;
@@ -95,6 +96,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            pointer-events: none;
         }
         .wheel-center-inner {
             width: 10px;
@@ -125,7 +127,7 @@
             font-weight: 800;
             border-radius: 12px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 5px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -133,31 +135,79 @@
             background-color: #111;
         }
 
-        #resetBtn {
+        /* Action Buttons Container */
+        .secondary-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        .action-btn {
             background-color: transparent;
             color: #888;
-            border: none;
-            padding: 10px 20px;
-            font-size: 12px;
+            border: 1px solid #444;
+            padding: 8px 20px;
+            font-size: 11px;
             font-weight: 700;
-            letter-spacing: 2px;
-            margin-top: 25px;
+            letter-spacing: 1.5px;
+            border-radius: 6px;
             cursor: pointer;
             text-transform: uppercase;
+        }
+        .action-btn:active {
+            background-color: #333;
+        }
+        #confirmReplaceBtn {
+            color: #3c8134;
+            border-color: #3c8134;
+        }
+        #resetBigRBtn {
+            color: #ff4b4b;
+            border-color: #ff4b4b;
         }
 
         footer {
             margin-top: auto;
             padding: 20px;
             width: 100%;
-            text-align: left;
+            display: flex;
+            justify-content: space-between; /* Space out Replace & Terms */
             border-top: 1px solid #333;
         }
-        #termsBtn {
+        #termsBtn, #replaceBtn {
             color: #888;
             font-size: 14px;
             cursor: pointer;
             user-select: none;
+        }
+
+        /* Toast Notifications */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+        #toast.show {
+            visibility: visible;
+            bottom: 50px;
+            opacity: 1;
         }
 
         /* Winner Modal */
@@ -247,11 +297,8 @@
             cursor: pointer;
             text-transform: uppercase;
         }
-        #continueBtn:active {
-            background-color: #1d3a94;
-        }
 
-        /* --- CURRENT TEAMS SCREEN & ANIMATIONS --- */
+        /* Teams Screen */
         #calculatingScreen {
             display: none;
             flex: 1;
@@ -290,7 +337,6 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-
         .player {
             display: flex;
             flex-direction: column;
@@ -336,9 +382,7 @@
             transform: scale(1);
             animation: pulse 2s infinite 0.5s; 
         }
-        #vsDivider:active {
-            transform: scale(0.9);
-        }
+        #vsDivider:active { transform: scale(0.9); }
 
         @keyframes pulse {
             0% { transform: scale(1); }
@@ -346,9 +390,9 @@
             100% { transform: scale(1); }
         }
 
-        /* --- HISTORY SCREEN MODAL --- */
+        /* History Modal */
         #historyModal {
-            display: none; /* Hidden default */
+            display: none; 
             position: fixed;
             top: 0;
             left: 0;
@@ -365,11 +409,7 @@
             padding: 15px 20px;
             border-bottom: 1px solid #333;
         }
-        .hist-header h2 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 800;
-        }
+        .hist-header h2 { margin: 0; font-size: 20px; font-weight: 800; }
         #closeHistoryBtn {
             background: transparent;
             color: #eaeaea;
@@ -378,21 +418,16 @@
             font-weight: bold;
             cursor: pointer;
         }
-        
         #historyContent {
             flex: 1;
             overflow-y: auto;
             padding: 20px 0;
         }
-        
-        /* The specific line: 10% to 90% (width 80% centered) */
         .hist-divider {
             width: 80%;
             margin: 30px auto;
             border-top: 2px solid #333;
         }
-
-        /* Compact Layout for History Only */
         .hist-entry {
             width: 100%;
             padding: 0 20px;
@@ -423,7 +458,6 @@
             margin-bottom: 10px;
             text-transform: uppercase;
         }
-        /* Side by Side layout for history player */
         .hist-player {
             display: flex;
             align-items: center;
@@ -440,24 +474,9 @@
             border: 2px solid #444;
             margin-right: 10px;
         }
-        .hist-player span {
-            font-size: 14px;
-            font-weight: 600;
-            color: #eaeaea;
-        }
-        .hist-vs-icon {
-            font-size: 24px;
-            width: 20%;
-            text-align: center;
-        }
-        .hist-empty {
-            text-align: center;
-            color: #666;
-            margin-top: 50px;
-            font-style: italic;
-        }
-
-        /* Clear Data Footer */
+        .hist-player span { font-size: 14px; font-weight: 600; color: #eaeaea; }
+        .hist-vs-icon { font-size: 24px; width: 20%; text-align: center; }
+        .hist-empty { text-align: center; color: #666; margin-top: 50px; font-style: italic; }
         .hist-footer {
             padding: 20px;
             border-top: 1px solid #333;
@@ -476,9 +495,7 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        #clearDataBtn:active {
-            background-color: #3a1111;
-        }
+        #clearDataBtn:active { background-color: #3a1111; }
 
     </style>
 </head>
@@ -501,11 +518,19 @@
     </div>
 
     <button id="spinBtn">Spin</button>
-    <button id="resetBtn">Reset Wheel</button>
+    
+    <div class="secondary-actions" id="actionButtons">
+        <button id="confirmReplaceBtn" class="action-btn" style="display: none;">Confirm Selection</button>
+        <button id="resetBigRBtn" class="action-btn" style="display: none;">Reset Big R</button>
+        <button id="resetBtn" class="action-btn">Reset Wheel</button>
+    </div>
 
     <footer id="footer">
+        <span id="replaceBtn">Replace</span>
         <span id="termsBtn">Terms</span>
     </footer>
+
+    <div id="toast">Message</div>
 
     <div id="calculatingScreen">
         <h2>Calculating<span id="dots"></span></h2>
@@ -545,8 +570,7 @@
             <h2>Match History</h2>
             <button id="closeHistoryBtn">&times;</button>
         </div>
-        <div id="historyContent">
-            </div>
+        <div id="historyContent"></div>
         <div class="hist-footer">
             <button id="clearDataBtn">Clear History Data</button>
         </div>
@@ -565,7 +589,7 @@
             { name: "Noah", color: "#a86128" }
         ];
         
-        let wheelData = [...originalData];
+        let wheelData = JSON.parse(JSON.stringify(originalData));
         let selectedPlayers = []; 
 
         let isRigged = false;
@@ -574,6 +598,24 @@
         
         let currentRotation = 0;
         let isSpinning = false;
+
+        // Replace Mode Variables
+        let isReplaceMode = false;
+        let selectedToReplace = null;
+        let replacedOriginalName = null;
+        let hasBigRique = false;
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add("show");
+            setTimeout(() => { toast.classList.remove("show"); }, 3000);
+        }
+
+        function getImagePath(name) {
+            if (name === "Big Rique") return "Resources/Santiago.png";
+            return `Resources/${name}.png`;
+        }
 
         function drawWheel() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -585,7 +627,13 @@
 
             for (let i = 0; i < wheelData.length; i++) {
                 ctx.beginPath();
-                ctx.fillStyle = wheelData[i].color;
+                
+                // Replace mode colors
+                if (isReplaceMode) {
+                    ctx.fillStyle = (wheelData[i].name === selectedToReplace) ? "#ff4b4b" : "#3c8134";
+                } else {
+                    ctx.fillStyle = wheelData[i].color;
+                }
                 
                 ctx.moveTo(center, center);
                 ctx.arc(center, center, radius, i * arc, (i + 1) * arc);
@@ -605,8 +653,85 @@
 
         drawWheel();
 
+        // Canvas Click for Replace Mode Selection
+        canvas.addEventListener('click', (e) => {
+            if (!isReplaceMode || isSpinning) return;
+            const rect = canvas.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const dx = e.clientX - centerX;
+            const dy = e.clientY - centerY;
+
+            let clickAngle = Math.atan2(dy, dx) * (180 / Math.PI);
+            if (clickAngle < 0) clickAngle += 360;
+
+            let actualAngle = clickAngle - (currentRotation % 360);
+            if (actualAngle < 0) actualAngle += 360;
+
+            const sliceAngle = 360 / wheelData.length;
+            const index = Math.floor(actualAngle / sliceAngle);
+
+            if (wheelData[index]) {
+                selectedToReplace = wheelData[index].name;
+                drawWheel();
+            }
+        });
+
+        // Replace Button Logic
+        document.getElementById('replaceBtn').addEventListener('click', () => {
+            if (isSpinning) return;
+            
+            if (hasBigRique) {
+                const rbrBtn = document.getElementById('resetBigRBtn');
+                rbrBtn.style.display = (rbrBtn.style.display === 'none') ? 'inline-block' : 'none';
+            } else {
+                isReplaceMode = !isReplaceMode;
+                selectedToReplace = null;
+                drawWheel();
+                document.getElementById('confirmReplaceBtn').style.display = isReplaceMode ? 'inline-block' : 'none';
+            }
+        });
+
+        // Confirm Replace Logic
+        document.getElementById('confirmReplaceBtn').addEventListener('click', () => {
+            if (!selectedToReplace) {
+                showToast("Click a slice to replace first!");
+                return;
+            }
+            
+            const index = wheelData.findIndex(d => d.name === selectedToReplace);
+            if (index !== -1) {
+                replacedOriginalName = wheelData[index].name;
+                wheelData[index].name = "Big Rique";
+                hasBigRique = true;
+            }
+            
+            isReplaceMode = false;
+            selectedToReplace = null;
+            document.getElementById('confirmReplaceBtn').style.display = 'none';
+            drawWheel();
+            showToast("Added Big Rique!");
+        });
+
+        // Reset Big R Logic
+        document.getElementById('resetBigRBtn').addEventListener('click', () => {
+            const index = wheelData.findIndex(d => d.name === "Big Rique");
+            if (index !== -1 && replacedOriginalName) {
+                wheelData[index].name = replacedOriginalName;
+            }
+            hasBigRique = false;
+            replacedOriginalName = null;
+            document.getElementById('resetBigRBtn').style.display = 'none';
+            drawWheel();
+            showToast("Big Rique removed!");
+        });
+
+        // Spin Button
         document.getElementById('spinBtn').addEventListener('click', () => {
-            if(isSpinning || wheelData.length === 0) return;
+            if(isSpinning || wheelData.length === 0 || isReplaceMode) {
+                if(isReplaceMode) showToast("Confirm or cancel replace first!");
+                return;
+            }
             isSpinning = true;
 
             let winningName;
@@ -628,9 +753,7 @@
             const currentMod = currentRotation % 360;
             let spinAmount = (360 * 6) + (targetAngleToLandOnTop - currentMod);
             
-            if(spinAmount < (360 * 5)) {
-                spinAmount += 360;
-            }
+            if(spinAmount < (360 * 5)) spinAmount += 360;
 
             currentRotation += spinAmount;
 
@@ -651,9 +774,9 @@
             winnerTextEl.innerText = name;
             winnerTextEl.style.color = color; 
             
-            const imagePath = `Resources/${name}.png`;
+            const imagePath = getImagePath(name);
             winnerImgEl.src = imagePath;
-            fallbackSubtextEl.innerText = `(Image missing: add ${name}.png to Resources folder)`;
+            fallbackSubtextEl.innerText = `(Image missing: add requested file to Resources folder)`;
             
             winnerImgEl.onload = () => { winnerImgEl.style.display = 'block'; };
             winnerImgEl.onerror = () => { winnerImgEl.style.display = 'none'; };
@@ -681,12 +804,10 @@
             }
         });
 
-        /* --- DATE FORMATTER --- */
         function getFormattedDate() {
             const date = new Date();
             const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-            
             const month = months[date.getMonth()];
             const dayName = days[date.getDay()];
             const dayNum = date.getDate();
@@ -703,7 +824,7 @@
         function triggerTeamCalculation() {
             document.getElementById('wheel-wrapper').style.display = 'none';
             document.getElementById('spinBtn').style.display = 'none';
-            document.getElementById('resetBtn').style.display = 'none';
+            document.getElementById('actionButtons').style.display = 'none';
             document.getElementById('footer').style.display = 'none';
 
             const calcScreen = document.getElementById('calculatingScreen');
@@ -716,11 +837,9 @@
                 dotsEl.innerText = '.'.repeat(dotCount);
             }, 400);
 
-            // Save to Cache immediately while calculating
             const team2List = wheelData.map(d => d.name);
             saveToHistory(selectedPlayers, team2List);
 
-            // 2 seconds for calculating
             setTimeout(() => {
                 clearInterval(dotInterval);
                 calcScreen.style.display = 'none';
@@ -734,16 +853,15 @@
                 team1: [...t1],
                 team2: [...t2]
             };
-            
             let history = JSON.parse(localStorage.getItem('brawlHistory') || '[]');
-            history.unshift(entry); // Add to beginning
+            history.unshift(entry); 
             localStorage.setItem('brawlHistory', JSON.stringify(history));
         }
 
         function generatePlayerHTML(name) {
             return `
                 <div class="player">
-                    <img src="Resources/${name}.png" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='">
+                    <img src="${getImagePath(name)}" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='">
                     <span>${name}</span>
                 </div>
             `;
@@ -751,18 +869,13 @@
 
         function showTeams(team2List) {
             document.getElementById('teamsScreen').style.display = 'flex';
-
-            const team1HTML = selectedPlayers.map(name => generatePlayerHTML(name)).join('');
-            document.getElementById('team1Players').innerHTML = team1HTML;
-
-            const team2HTML = team2List.map(name => generatePlayerHTML(name)).join('');
-            document.getElementById('team2Players').innerHTML = team2HTML;
+            document.getElementById('team1Players').innerHTML = selectedPlayers.map(n => generatePlayerHTML(n)).join('');
+            document.getElementById('team2Players').innerHTML = team2List.map(n => generatePlayerHTML(n)).join('');
 
             const team1Nodes = document.querySelectorAll('#team1Players .player');
             const team2Nodes = document.querySelectorAll('#team2Players .player');
             const vsDivider = document.getElementById('vsDivider');
 
-            // Staggered animation: Rows drop in 1 second apart (0s, 1s, 2s)
             for(let i = 0; i < 3; i++) {
                 setTimeout(() => {
                     if(team1Nodes[i]) team1Nodes[i].classList.add('show');
@@ -770,44 +883,60 @@
                 }, i * 1000); 
             }
 
-            // VS Emoji reveals
-            setTimeout(() => {
-                vsDivider.classList.add('show');
-            }, 3000);
+            setTimeout(() => { vsDivider.classList.add('show'); }, 3000);
         }
 
-        // The ⚔️ Emoji Click to Reset
+        function resetToOriginalState(fullReset) {
+            if(fullReset) {
+                wheelData = JSON.parse(JSON.stringify(originalData));
+                hasBigRique = false;
+                replacedOriginalName = null;
+            } else {
+                // Just reset from current players (keeps Big Rique if he wasn't fully wiped)
+                if(!hasBigRique) {
+                    wheelData = JSON.parse(JSON.stringify(originalData));
+                } else {
+                    wheelData = JSON.parse(JSON.stringify(originalData));
+                    const idx = wheelData.findIndex(d => d.name === replacedOriginalName);
+                    if(idx !== -1) wheelData[idx].name = "Big Rique";
+                }
+            }
+            
+            selectedPlayers = [];
+            isReplaceMode = false;
+            selectedToReplace = null;
+            
+            document.getElementById('confirmReplaceBtn').style.display = 'none';
+            document.getElementById('resetBigRBtn').style.display = 'none';
+            
+            if(isRigged) riggedIndex = 0;
+
+            currentRotation = 0;
+            canvas.style.transition = 'none';
+            canvas.style.transform = `rotate(0deg)`;
+            drawWheel();
+        }
+
         document.getElementById('vsDivider').addEventListener('click', () => {
             document.getElementById('teamsScreen').style.display = 'none';
             document.getElementById('vsDivider').classList.remove('show');
             
             document.getElementById('wheel-wrapper').style.display = 'block';
             document.getElementById('spinBtn').style.display = 'block';
-            document.getElementById('resetBtn').style.display = 'block';
-            document.getElementById('footer').style.display = 'block';
+            document.getElementById('actionButtons').style.display = 'flex';
+            document.getElementById('footer').style.display = 'flex';
 
-            wheelData = [...originalData];
-            selectedPlayers = [];
-            if(isRigged) riggedIndex = 0;
-
-            currentRotation = 0;
-            canvas.style.transition = 'none';
-            canvas.style.transform = `rotate(0deg)`;
-            drawWheel();
+            resetToOriginalState(false);
         });
 
+        // Normal Reset Button
         document.getElementById('resetBtn').addEventListener('click', () => {
             if(isSpinning) return;
-            wheelData = [...originalData];
-            selectedPlayers = [];
-            if(isRigged) riggedIndex = 0;
-
-            currentRotation = 0;
-            canvas.style.transition = 'none';
-            canvas.style.transform = `rotate(0deg)`;
-            drawWheel();
+            resetToOriginalState(true);
+            showToast("Wheel Reset Successfully!");
         });
 
+        // The Hidden Rigged Toggle
         const termsBtn = document.getElementById('termsBtn');
         termsBtn.addEventListener('click', () => {
             isRigged = !isRigged;
@@ -823,7 +952,7 @@
         function generateCompactPlayerHTML(name) {
             return `
                 <div class="hist-player">
-                    <img src="Resources/${name}.png" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='">
+                    <img src="${getImagePath(name)}" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='">
                     <span>${name}</span>
                 </div>
             `;
@@ -839,10 +968,9 @@
             }
 
             let htmlString = "";
-            
             history.forEach((match, index) => {
-                const team1Str = match.team1.map(name => generateCompactPlayerHTML(name)).join('');
-                const team2Str = match.team2.map(name => generateCompactPlayerHTML(name)).join('');
+                const team1Str = match.team1.map(n => generateCompactPlayerHTML(n)).join('');
+                const team2Str = match.team2.map(n => generateCompactPlayerHTML(n)).join('');
                 
                 htmlString += `
                     <div class="hist-entry">
@@ -860,13 +988,8 @@
                         </div>
                     </div>
                 `;
-
-                // Add the specific 10%-90% separator unless it's the last item
-                if (index < history.length - 1) {
-                    htmlString += `<div class="hist-divider"></div>`;
-                }
+                if (index < history.length - 1) htmlString += `<div class="hist-divider"></div>`;
             });
-
             historyContent.innerHTML = htmlString;
         }
 
@@ -880,12 +1003,10 @@
         });
 
         document.getElementById('clearDataBtn').addEventListener('click', () => {
-            // Popup 1
             if(confirm("Are you sure you want to delete all match history?")) {
-                // Popup 2
                 if(confirm("This action is permanent! Are you absolutely sure?")) {
                     localStorage.removeItem('brawlHistory');
-                    renderHistory(); // Refresh view immediately
+                    renderHistory(); 
                 }
             }
         });
